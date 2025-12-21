@@ -59,7 +59,7 @@
 | :--- | :---: | :--- | :--- |
 | `EPIC_EMAIL` | ✅ | Epic 账号邮箱 (**必须关闭 2FA**) | `myname@email.com` |
 | `EPIC_PASSWORD` | ✅ | Epic 账号密码 | `password123` |
-| `GEMINI_API_KEY` | ✅ | AiHubMix 或 Google 的 API Key | `sk-xxxxxxxx` |
+| `GEMINI_API_KEY` | ✅ | [AiHubMix](https://aihubmix.com/?aff=mvyG) 或 Google 的 API Key | `sk-xxxxxxxx` |
 
 ### 3. 可选配置 (Advanced)
 
