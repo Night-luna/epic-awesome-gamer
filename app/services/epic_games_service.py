@@ -76,7 +76,8 @@ def get_promotions() -> List[PromotionGame]:
             e["url"] = f"{URL_PRODUCT_PAGE.rstrip('/')}/{e['offerMappings'][0]['pageSlug']}"
         except (KeyError, IndexError):
             if e.get("productSlug"):
-                e["url"] = f"{URL_PRODUCT_BUNDLES.rstrip('/')}/{e['productSlug']}"
+                # [修复 1] 优先使用商品页 (/p/) 而非捆绑包页 (/bundles/)，修复 Blood West 等游戏链接错误
+                e["url"] = f"{URL_PRODUCT_PAGE.rstrip('/')}/{e['productSlug']}"
             else:
                 logger.info(f"Failed to get URL: {e}")
                 continue
@@ -181,26 +182,17 @@ class EpicAgent:
             logger.success("All week-free games are already in the library")
             return
 
-        game_promotions = []
-        bundle_promotions = []
+        # [修复 2] 移除 Bundle 过滤逻辑，统一处理所有识别到的免费游戏
         for p in self._promotions:
             pj = json.dumps({"title": p.title, "url": p.url}, indent=2, ensure_ascii=False)
             logger.debug(f"Discover promotion \n{pj}")
-            if "/bundles/" in p.url:
-                bundle_promotions.append(p)
-            else:
-                game_promotions.append(p)
 
-        # 收集优惠游戏
-        if game_promotions:
+        # 收集所有优惠游戏
+        if self._promotions:
             try:
-                await self.epic_games.collect_weekly_games(game_promotions)
+                await self.epic_games.collect_weekly_games(self._promotions)
             except Exception as e:
                 logger.exception(e)
-
-        # 收集游戏捆绑内容
-        if bundle_promotions:
-            logger.debug("Skip the game bundled content")
 
         logger.debug("All tasks in the workflow have been completed")
 
