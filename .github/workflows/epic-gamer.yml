@@ -3,13 +3,17 @@ name: Epic Awesome Gamer (Scheduled AiHubMix)
 on:
   workflow_dispatch: # 手动触发
   schedule:
-    # 每周二和周五北京时间 23:55 运行
+    # 每天 UTC 08:00 (北京时间 16:00) 运行一次
     - cron: '0 8 * * *'
 
 jobs:
   epic-gamer:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    
+    # 🔴 [核心修改] 只有当仓库不是 '10000ge10000/epic-awesome-gamer' 时才运行
+    # 效果：你的仓库触发定时任务会直接显示 Skipped (灰色)，别人 Fork 后会正常运行 (绿色)
+    if: github.repository != '10000ge10000/epic-awesome-gamer'
 
     steps:
       - name: Checkout repository
@@ -31,7 +35,7 @@ jobs:
       - name: Install dependencies
         run: uv sync
 
-      # --- 修改这一步：增加 GITHUB_TOKEN 以解决 403 频率限制 ---
+      # 增加 GITHUB_TOKEN 以解决 Camoufox 下载时的 403 频率限制
       - name: Install Camoufox
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -44,6 +48,7 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_BASE_URL: ${{ secrets.GEMINI_BASE_URL }}
           GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
+          # 在 Actions 中我们依靠 GitHub 的 cron 触发，所以关闭内部调度器
           ENABLE_APSCHEDULER: false
           PYTHONPATH: app
         run: |
