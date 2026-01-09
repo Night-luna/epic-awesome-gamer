@@ -4,16 +4,15 @@ on:
   workflow_dispatch: # 手动触发
   schedule:
     # 每天 UTC 08:00 (北京时间 16:00) 运行一次
-    - cron: '0 8 * * *'
+    # - cron: '0 8 * * *'
+    # 每周五 07:00（北京时间 UTC+8）= 每周四 23:00（UTC）
+    - cron: '0 23 * * 4'
 
 jobs:
   epic-gamer:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     
-    # 🔴 [核心修改] 只有当仓库不是 '10000ge10000/epic-awesome-gamer' 时才运行
-    # 效果：你的仓库触发定时任务会直接显示 Skipped (灰色)，别人 Fork 后会正常运行 (绿色)
-    if: github.repository != '10000ge10000/epic-awesome-gamer'
 
     steps:
       - name: Checkout repository
